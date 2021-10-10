@@ -1,0 +1,17 @@
+{
+  "name": "dgg-bot",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "homepage": "https://github.com/TotallyMehis/nathanTiny2-chat-bot",
+  "scripts": {
+    "start": "node start.js",
+    "test": "node tests.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "canvas": "^2.8.0",
+    "ws": "^8.2.3"
+  }
+}

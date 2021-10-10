@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8" />
+  <style>
+    @import url(https://fonts.googleapis.com/css?family=Roboto:400,500,600,700);
+
+    html, body {
+      font-family: "Roboto", Helvetica, "Trebuchet MS", Verdana, sans-serif;
+      font-size: 13px;
+      text-rendering: optimizeLegibility;
+      font-feature-settings: 'kern';
+      background-color: #080808;
+      color: #B9B9B9;
+      margin: 0;
+      padding: 0;
+    }
+
+    .emote {
+      z-index: 1;
+      display: inline-block;
+      position: relative;
+      overflow: hidden;
+      text-indent: -999em;
+    }
+
+    .prefix-continue {
+      color: #414141;
+    }
+
+    .bold {
+      font-weight: 500;
+    }
+
+    .full-msg {
+      line-height: 1.65em;
+    }
+
+    .user {
+      padding-left: .3em;
+    }
+
+    .user.regular {
+      color: #dcdcdc;
+    }
+
+    .editor {
+      background-color: #222222;
+      border-top:1px solid grey;
+      padding: 1em;
+      bottom: 0;
+      position: fixed;
+      width: 100%;
+    }
+
+    .prefix {}
+  </style>
+
+  <script src="https://code.jquery.com/jquery-3.6.0.slim.min.js" integrity="sha256-u7e5khyithlIdTpu22PHhENmPcRdFiHRjhAuHcs05RI=" crossorigin="anonymous"></script>
+
+  <script>
+    var emoteList = [
+      "Abathur",
+      "AMAZIN",
+      "AngelThump",
+      "ApeHands",
+      "Askers",
+      "ASLAN",
+      "ATAB",
+      "AYAYA",
+      "AYYYLMAO",
+      "BasedGod",
+      "BASEDWATM8",
+      "BERN",
+      "BibleThump",
+      "Blade",
+      "Blesstiny",
+      "Blubstiny",
+      "BOGGED",
+      "BOOMER",
+      "BoomerSippy",
+      "catJAM",
+      "CheekerZ",
+      "ChibiDesti",
+      "Clap",
+      "COGGERS",
+      "ComfyAYA",
+      "ComfyDog",
+      "ComfyFerret",
+      "ComfyMel",
+      "COOMER",
+      "Copium",
+      "CROPSTINY",
+      "CuckCrab",
+      "Cutestiny",
+      "CUX",
+      "DaFeels",
+      "DAFUK",
+      "DANKMEMES",
+      "DappaKappa",
+      "DatGeoff",
+      "DCOLON",
+      "DEATH",
+      "Depresstiny",
+      "Derpstiny",
+      "DestiSenpaii",
+      "dggL",
+      "Disgustiny",
+      "Dravewin",
+      "DuckerZ",
+      "DURRSTINY",
+      "ECH",
+      "FeedNathan",
+      "FeelsAmazingMan",
+      "FeelsBadMan",
+      "FeelsBirthdayMan",
+      "FeelsDankMan",
+      "FeelsGimiMan",
+      "FeelsGoodMan",
+      "FeelsOkayMan",
+      "FeelsPeekMan",
+      "FeelsStrongMan",
+      "FeelsWeirdMan",
+      "FerretLOL",
+      "FiveHead",
+      "ForYou",
+      "FourHead",
+      "FrankerZ",
+      "gachiGASM",
+      "GameOfThrows",
+      "GODSTINY",
+      "GRUG",
+      "GRUGingOverIt",
+      "HACKERMAN",
+      "haHAA",
+      "Heimerdonger",
+      "Hhhehhehe",
+      "HmmStiny",
+      "INFESTINY",
+      "JAMSTINY",
+      "Kappa",
+      "KappaRoss",
+      "KING",
+      "Klappa",
+      "LeRuse",
+      "LIES",
+      "LOVE",
+      "LUL",
+      "LULW",
+      "MALARKEY",
+      "MASTERB8",
+      "Memegasm",
+      "Milkerino",
+      "miyanobird",
+      "MiyanoHype",
+      "MLADY",
+      "MMMM",
+      "monkaS",
+      "monkaSMEGA",
+      "monkaVirus",
+      "MotherFuckinGame",
+      "Nappa",
+      "nathanAYAYA",
+      "nathanBlub",
+      "nathanBogged",
+      "nathanBoomer",
+      "nathanD",
+      "nathanDank",
+      "nathanDerp",
+      "nathanEZ",
+      "nathanF",
+      "nathanFeels",
+      "nathanGG",
+      "nathanGod1",
+      "nathanGod2",
+      "nathanGod3",
+      "nathanGod4",
+      "nathanGodstiny",
+      "nathanNotears",
+      "nathanObject",
+      "nathanOOO",
+      "nathanPrime",
+      "nathanRuse",
+      "nathanRustle",
+      "nathanSenpai",
+      "nathanShroom",
+      "nathanThinking",
+      "nathanTiny1",
+      "nathanTiny2",
+      "nathanTiny2_OG",
+      "nathanTowel",
+      "nathanW",
+      "nathanWat",
+      "nathanWeeb",
+      "nathanYee",
+      "nathanYikes",
+      "nathanZoomer",
+      "NiceMeMe",
+      "NOBULLY",
+      "NODDERS",
+      "NOPERS",
+      "NoTears",
+      "NOTMYTEMPO",
+      "OhKrappa",
+      "OhMyDog",
+      "OMEGALUL",
+      "OOOO",
+      "OverRustle",
+      "Painstiny",
+      "PARDNER",
+      "peepoRiot",
+      "PEPE",
+      "PepeHands",
+      "PepeLaugh",
+      "PepeMods",
+      "pepeSteer",
+      "pepeW",
+      "PepoComfy",
+      "PepoG",
+      "PepOk",
+      "PepoThink",
+      "PepoTurkey",
+      "PepoWant",
+      "PICNIC",
+      "Pog",
+      "POGGERS",
+      "POTATO",
+      "RapThis",
+      "RaveDoge",
+      "REE",
+      "Shroomstiny",
+      "Shrugstiny",
+      "SICKO",
+      "Sippy",
+      "SLEEPSTINY",
+      "Slugstiny",
+      "Slumlord",
+      "SMASHit",
+      "SNAP",
+      "SoDoge",
+      "SOTRIGGERED",
+      "SOY",
+      "SpookerZ",
+      "SURPRISE",
+      "SWEATSTINY",
+      "TeddyPepe",
+      "tf",
+      "tonyW",
+      "TRIAD",
+      "triHarder",
+      "TRUMPED",
+      "UNLUCKY",
+      "UWOTM8",
+      "WEOW",
+      "WhoahDude",
+      "widepeepoHappy",
+      "WOOF",
+      "WooYeah",
+      "WORTH",
+      "Wowee",
+      "YAM",
+      "YEE",
+      "YEEHAW",
+      "YeeLaugh",
+      "YeeMods",
+      "Yoda1",
+      "ZOOMER"
+    ]
+
+    function createChatMsg(username, msg, repeat) {
+      const fullEle = document.createElement('div')
+      fullEle.className = 'full-msg'
+
+      if (!repeat) {
+        const userEle = document.createElement('span')
+        userEle.className = 'user regular bold'
+        userEle.innerHTML = username
+        fullEle.appendChild(userEle)
+      }
+
+
+      const prefixEle = document.createElement('span')
+      prefixEle.className = repeat ? 'prefix-continue' : 'prefix'
+      prefixEle.innerHTML = repeat ? '> ' : ': '
+      fullEle.appendChild(prefixEle)
+
+      if (typeof msg === 'string') {
+        const msgEle = document.createElement('span')
+        msgEle.className = 'msg'
+        msgEle.innerHTML = msg
+        fullEle.appendChild(msgEle)
+      } else if (typeof msg === 'object') {
+        fullEle.appendChild(msg)
+      }
+
+      document.getElementById('msgs').appendChild(fullEle)
+    }
+
+    function createEmote(name) {
+      const ele = document.createElement('div')
+      ele.className = 'emote ' + name
+      ele.title = name
+      ele.innerHTML = name
+      return ele
+    }
+
+    var canvas = undefined
+    var context = undefined
+    document.addEventListener('DOMContentLoaded', function() {
+      canvas = document.createElement('canvas')
+      context = canvas.getContext('2d')
+
+      document.getElementById('mysubmit').addEventListener('click', function(event) {
+        const username = document.getElementById('myname').value
+        const msg = document.getElementById('mytxt').value
+        const repeat = document.getElementById('myrepeat').checked ? true : false
+
+        const msgEle = document.createElement('span')
+        msgEle.className = 'msg'
+
+        const tokens = msg.split(' ')
+        for (const token of tokens) {
+          console.log(token)
+          if (emoteList.includes(token)) {
+            msgEle.appendChild(createEmote(token))
+            msgEle.insertAdjacentHTML('beforeend', ' ')
+          } else {
+            msgEle.insertAdjacentHTML('beforeend', token + ' ')
+          }
+        }
+
+        createChatMsg(username, msgEle, repeat)
+      })
+    })
+
+    function printTable(bold = false) {
+      const weight = bold ? 500 : 400
+      context.font = weight + ' normal 14px Roboto'
+      const output = {}
+
+      for (let i = 32; i < 127; i++) {
+        const char = String.fromCharCode(i)
+        const width = context.measureText(char).width
+        console.log('"' + char + '" width:', width)
+        
+        output[char] = width
+      }
+
+      console.log(weight, 'output:', JSON.stringify(output))
+    }
+
+    function calcSeparately(txt) {
+      let size = 0
+
+      for (let i = 0; i < txt.length; i++) {
+        size += context.measureText(txt[i]).width
+      }
+
+      return size
+    }
+
+    function calcEmoteSizes(emotes = null) {
+      if (!emotes) {
+        emotes = emoteList
+      }
+
+      const testEle = document.getElementById('tests')
+
+      const table = {}
+
+      for (const emote of emotes) {
+        console.log('Emote:', emote)
+        const ele = createEmote(emote)
+        testEle.appendChild(ele)
+
+        const style = window.getComputedStyle(ele)
+        //console.log('Style:', style)
+        //console.log('Width: ', $('.emote .' + emote).outerWidth(true))
+        const width = parseFloat(style.width) + parseFloat(style.marginLeft) + parseFloat(style.marginRight)
+        //console.log('Total width:', width)
+        
+        table[emote] = width
+
+        testEle.removeChild(ele)
+        //break
+      }
+
+      console.log(JSON.stringify(table, null, 2))
+    }
+  </script>
+
+  <link rel="stylesheet" href="https://cdn.destiny.gg/2.32.0/emotes/emotes.css?_=1633741045248.8152" referrerpolicy="no-referrer" />
+  <link rel="stylesheet" href="https://cdn.destiny.gg/2.32.0/flairs/flairs.css?_=1633741045248.8152" referrerpolicy="no-referrer" />
+</head>
+
+<body>
+  <div id="msgs">
+    <div class="full-msg"><span class="user regular bold">nathanTiny2</span><span class="prefix">: </span><span class="msg">Hello this is the message!</span></div>
+  </div>
+  <div id="tests">Hello!</div>
+  <div class="editor">
+    Username: <input type="text" value="MyName" id="myname" />
+    Message: <input type="text" placeholder="This is my message" id="mytxt" />
+    Repeat: <input type="checkbox" id="myrepeat" />
+    <input type="submit" value="Send message" id="mysubmit" />
+    <br />
+  </div>
+</body>
+
+</html>
