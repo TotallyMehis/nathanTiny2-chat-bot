@@ -6,7 +6,10 @@ const NathanTinyApp = require('./app')
 const util = require('./util')
 
 
-
+/**
+ * 
+ * @returns {object|null}
+ */
 function readConfig() {
   let options = null
   try {

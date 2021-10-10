@@ -5,7 +5,11 @@ const NathanTinyAnalyzer = require('./analyzer')
 
 
 class NathanTinyApp {
-
+  /**
+   * 
+   * @param {string} myName 
+   * @param {object} options 
+   */
   constructor(myName, options) {
     this.myName = myName
     this.options = options
@@ -23,6 +27,11 @@ class NathanTinyApp {
     })
   }
 
+  /**
+   * 
+   * @param {string} configName 
+   * @returns {object|null}
+   */
   static readConfig(configName) {
     let options = null
   
@@ -60,6 +69,11 @@ class NathanTinyApp {
     console.log(`Pause time: ${this.options.pause}`)
   }
 
+  /**
+   * 
+   * @param {object} msgObj 
+   * @returns {boolean}
+   */
   shouldHandleMessage(msgObj) {
     // Pls don't respond to urself
     if (msgObj.nick === this.myName) {
@@ -84,11 +98,20 @@ class NathanTinyApp {
     return true
   }
 
+  /**
+   * 
+   * @param {object} msgObj 
+   */
   updateLastRecv(msgObj) {
     this.lastRecvNick = `${msgObj.nick}`
     this.lastRecvMsg = `${msgObj.data}`
   }
 
+  /**
+   * 
+   * @param {object} conn 
+   * @param {object} msgObj 
+   */
   handleMessage(conn, msgObj) {
     if (!this.shouldHandleMessage(msgObj)) {
       this.updateLastRecv(msgObj)

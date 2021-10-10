@@ -25,6 +25,10 @@ const context = canvas.getContext('2d')
 
 
 class NathanTinyAnalyzer {
+  /**
+   * 
+   * @param {object} options 
+   */
   constructor(options = {}) {
     this.replyWith = options.replyWith
     this.searchFor = options.searchFor
@@ -44,7 +48,13 @@ class NathanTinyAnalyzer {
     }
   }
 
-
+  /**
+   * 
+   * @param {string} txt 
+   * @param {string} emoteName 
+   * @param {number} offset 
+   * @returns {number}
+   */
   static findEmote(txt, emoteName, offset = 0) {
     let pos = txt.indexOf(emoteName, offset)
     if (pos === -1) {
@@ -65,6 +75,12 @@ class NathanTinyAnalyzer {
     return pos
   }
 
+  /**
+   * 
+   * @param {string} txt 
+   * @param {boolean} bold 
+   * @returns {number}
+   */
   static calcTextSize(txt, bold = false) {
     //
     // This table method didn't work. Presumably because of kerning.
@@ -106,6 +122,11 @@ class NathanTinyAnalyzer {
     return measuredWidth
   }
 
+  /**
+   * 
+   * @param {string} nick 
+   * @returns {number}
+   */
   static calcNickSize(nick) {
     // Nick + padding-left .3em
     return NathanTinyAnalyzer.calcTextSize(nick, true) + DEFAULT_PIXEL_SIZE * 0.3
@@ -156,6 +177,12 @@ class NathanTinyAnalyzer {
     //return calcTextSize('.', false)
   }
 
+  /**
+   * 
+   * @param {object} msgObj 
+   * @param {boolean} isRepeatMsg 
+   * @returns {number|undefined}
+   */
   calculateTargetMsgWidth(msgObj, isRepeatMsg) {
 
     const searchFor = this.searchFor
@@ -290,17 +317,12 @@ class NathanTinyAnalyzer {
     }
   }
 
-  calculateMsg(msgObj, isRepeatMsg) {
-    const targetSize = this.calculateTargetMsgWidth(msgObj, isRepeatMsg)
-    if (targetSize === undefined) {
-      return undefined
-    }
-
-    if (this.maxSize && targetSize > this.maxSize) {
-      util.debug('Size ', targetSize, 'went over the maximum of', this.maxSize)
-      return undefined
-    }
-
+  /**
+   * 
+   * @param {number} targetSize 
+   * @returns {string|null}
+   */
+  createMsgToSize(targetSize) {
     //util.debug('Target size:', targetSize)
 
     const underscoreSize = NathanTinyAnalyzer.getUnderscoreSize()
@@ -320,8 +342,8 @@ class NathanTinyAnalyzer {
 
     const sizeDif = targetSize - coveredArea
     if (sizeDif < -dotSize) { // More than a dot size is noticeable.
-      util.debug('Cannot respond to', msgObj.nick, sizeDif)
-      return
+      util.debug('Cannot reach', sizeDif)
+      return null
     }
 
     util.debug('Must cover', sizeDif, 'pixels!')
@@ -350,6 +372,31 @@ class NathanTinyAnalyzer {
     }
 
     return add + this.replyWith
+  }
+
+  /**
+   * 
+   * @param {object} msgObj 
+   * @param {boolean} isRepeatMsg 
+   * @returns {string|null}
+   */
+  calculateMsg(msgObj, isRepeatMsg) {
+    const targetSize = this.calculateTargetMsgWidth(msgObj, isRepeatMsg)
+    if (targetSize === undefined) {
+      return null
+    }
+
+    if (this.maxSize && targetSize > this.maxSize) {
+      util.debug('Size ', targetSize, 'went over the maximum of', this.maxSize)
+      return null
+    }
+
+    const msg = this.createMsgToSize(targetSize)
+    if (!msg) {
+      util.debug('Cannot respond to', msgObj.nick)
+    }
+
+    return msg
   }
 }
 
