@@ -10,7 +10,7 @@ const analyzer = new NathanTinyAnalyzer(options)
 
 
 function test(obj, repeat = false) {
-  const msg = analyzer.calculateMsg(obj, repeat)
+  const msg = analyzer.calculateResponse(obj.nick, obj.data, obj.features, repeat)
   if (!msg) {
     console.log('------------')
     console.log(`${obj.nick}: ${obj.data}`)

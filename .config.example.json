@@ -1,6 +1,10 @@
 {
   "sid": "",
   "authtoken": "PUT_AUTH_TOKEN_HERE",
+  
   "myname": "_nathanTiny2",
-  "timeout": 20
+  "pause": 10,
+  "maxsize": 650,
+  "searchfor": "nathanTiny1",
+  "replywith": "nathanTiny2"
 }

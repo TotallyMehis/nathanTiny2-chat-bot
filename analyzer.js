@@ -1,7 +1,7 @@
 const { registerFont, createCanvas } = require('canvas')
 const fs = require('fs')
 
-const util = require('./util')
+const Util = require('./util')
 
 registerFont('data/Roboto-Regular.ttf', { family: 'Roboto', weight: '400' })
 registerFont('data/Roboto-Medium.ttf', { family: 'Roboto', weight: '500' })
@@ -62,13 +62,13 @@ class NathanTinyAnalyzer {
     }
   
     if (pos !== 0 && txt[pos - 1] !== ' ') {
-      //util.debug('Emote does not start with a whitespace!')
+      //Util.debug('Emote does not start with a whitespace!')
       return NathanTinyAnalyzer.findEmote(txt, emoteName, pos + emoteName.length)
     }
   
     const nextCharPos = pos + emoteName.length
     if (txt.length > nextCharPos && txt[nextCharPos] !== ' ') {
-      //util.debug('Emote does not end with a whitespace!')
+      //Util.debug('Emote does not end with a whitespace!')
       return NathanTinyAnalyzer.findEmote(txt, emoteName, pos + emoteName.length)
     }
   
@@ -103,7 +103,7 @@ class NathanTinyAnalyzer {
     // if (!txt.length) {
     //   return size
     // } else {
-    //   util.debug('Using canvas to figure out the remaining text length...')
+    //   Util.debug('Using canvas to figure out the remaining text length...')
     // }
     
   
@@ -113,7 +113,7 @@ class NathanTinyAnalyzer {
     context.font = `normal normal ${weight} ${DEFAULT_PIXEL_SIZE}px Roboto`
     const measureRes = context.measureText(txt)
   
-    //util.debug('Measure text:', measureRes)
+    //Util.debug('Measure text:', measureRes)
   
     // NOTE: width-property seems to return an integer only
     //return measureRes.width
@@ -179,19 +179,19 @@ class NathanTinyAnalyzer {
 
   /**
    * 
-   * @param {object} msgObj 
+   * @param {string} nick 
+   * @param {string} fullTxt 
+   * @param {Array} features 
    * @param {boolean} isRepeatMsg 
    * @returns {number|undefined}
    */
-  calculateTargetMsgWidth(msgObj, isRepeatMsg) {
+  calculateTargetMsgWidth(nick, fullTxt, features = [], isRepeatMsg = false) {
 
     const searchFor = this.searchFor
 
     if (isRepeatMsg) {
-      util.debug('This is a repeat message!')
+      Util.debug('This is a repeat message!')
     }
-
-    const fullTxt = msgObj.data
     
     const pos = NathanTinyAnalyzer.findEmote(fullTxt, searchFor)
     if (pos === -1) {
@@ -199,7 +199,7 @@ class NathanTinyAnalyzer {
     }
     
     const txt = fullTxt.substring(0, pos)
-    util.debug('Text until "' + searchFor + '": "' + txt + '"')
+    Util.debug('Text until "' + searchFor + '": "' + txt + '"')
     
     
     //
@@ -221,7 +221,7 @@ class NathanTinyAnalyzer {
           return undefined
         }
     
-        util.debug('Found emote "' + token + '"!', 'Adding', emoteSizes[token], 'pixels!')
+        Util.debug('Found emote "' + token + '"!', 'Adding', emoteSizes[token], 'pixels!')
         totalEmotesSize += emoteSizes[token]
 
         txtWithoutEmotes.push(' ')
@@ -231,15 +231,15 @@ class NathanTinyAnalyzer {
       }
     }
     
-    //util.debug('Total emotes size:', totalEmotesSize)
+    //Util.debug('Total emotes size:', totalEmotesSize)
 
     
     //
     // Flairs
     //
     let flairsSize = 0
-    if (msgObj.features && msgObj.features.length > 0) {
-      for (const feature of msgObj.features) {
+    if (features && features.length > 0) {
+      for (const feature of features) {
         if (feature in flairSizes) {
           if (flairSizes[feature] < 0) {
             console.error('Unsupported flair "' + feature + '"!')
@@ -262,14 +262,14 @@ class NathanTinyAnalyzer {
       flairsSize += NathanTinyAnalyzer.getSpaceSize()
     }
     
-    util.debug('Flairs total size:', flairsSize)
+    Util.debug('Flairs total size:', flairsSize)
     
     //
     // Nick
     //
-    let nickSize = NathanTinyAnalyzer.calcNickSize(msgObj.nick)
+    let nickSize = NathanTinyAnalyzer.calcNickSize(nick)
 
-    util.debug('Nick "' + msgObj.nick + '" size:', nickSize)
+    Util.debug('Nick "' + nick + '" size:', nickSize)
     
     //
     // Prefix
@@ -277,15 +277,15 @@ class NathanTinyAnalyzer {
     const prefixSize = NathanTinyAnalyzer.getPrefixSize()
     const repeatPrefixSize = NathanTinyAnalyzer.getRepeatPrefixSize()
     // if (isRepeatMsg) {
-    //   util.debug('Repeat prefix "> " size:', repeatPrefixSize)
+    //   Util.debug('Repeat prefix "> " size:', repeatPrefixSize)
     // } else {
-    //   util.debug('Prefix ": " size:', prefixSize)
+    //   Util.debug('Prefix ": " size:', prefixSize)
     // }
     
     //
     // Text
     //
-    util.debug('Text without emotes: "' + txtWithoutEmotes.join('') + '"')
+    Util.debug('Text without emotes: "' + txtWithoutEmotes.join('') + '"')
 
     let totalTextSize = 0
     for (const txt of txtWithoutEmotes) {
@@ -308,7 +308,7 @@ class NathanTinyAnalyzer {
     // And finally try to center it to the target emote
     //
     const halfEmoteSize = emoteSizes[searchFor] / 2
-    util.debug(searchFor, 'size :', emoteSizes[searchFor])
+    Util.debug(searchFor, 'size :', emoteSizes[searchFor])
 
     if (isRepeatMsg) {
       return repeatPrefixSize + totalEmotesSize + totalTextSize + halfEmoteSize
@@ -323,30 +323,30 @@ class NathanTinyAnalyzer {
    * @returns {string|null}
    */
   createMsgToSize(targetSize) {
-    //util.debug('Target size:', targetSize)
+    //Util.debug('Target size:', targetSize)
 
     const underscoreSize = NathanTinyAnalyzer.getUnderscoreSize()
-    //util.debug('Underscore size:', underscoreSize)
+    //Util.debug('Underscore size:', underscoreSize)
 
     const spaceSize = NathanTinyAnalyzer.getSpaceSize()
-    //util.debug('Space size:', spaceSize)
+    //Util.debug('Space size:', spaceSize)
 
     const dotSize = NathanTinyAnalyzer.getDotSize()
-    //util.debug('Dot size:', dotSize)
+    //Util.debug('Dot size:', dotSize)
 
     const myNameSize = NathanTinyAnalyzer.calcNickSize(this.myName)
-    //util.debug('My name (' + this.myName + ') size:', myNameSize)
+    //Util.debug('My name (' + this.myName + ') size:', myNameSize)
 
     const coveredArea = myNameSize + NathanTinyAnalyzer.getPrefixSize() + (emoteSizes[this.replyWith] / 2)
-    //util.debug('Already covered size:', coveredArea)
+    //Util.debug('Already covered size:', coveredArea)
 
     const sizeDif = targetSize - coveredArea
     if (sizeDif < -dotSize) { // More than a dot size is noticeable.
-      util.debug('Cannot reach', sizeDif)
+      Util.debug('Cannot reach', sizeDif)
       return null
     }
 
-    util.debug('Must cover', sizeDif, 'pixels!')
+    Util.debug('Must cover', sizeDif, 'pixels!')
 
     
     let add = ''
@@ -355,7 +355,7 @@ class NathanTinyAnalyzer {
     if (paddingSize >= 0) {
       const divByUnderscores = Math.max(0, (paddingSize / underscoreSize))
 
-      util.debug('How many underscores to get there:', divByUnderscores)
+      Util.debug('How many underscores to get there:', divByUnderscores)
 
       if (divByUnderscores > 0) {
         let numWholeUnderscores = Math.floor(divByUnderscores)
@@ -376,27 +376,29 @@ class NathanTinyAnalyzer {
 
   /**
    * 
-   * @param {object} msgObj 
+   * @param {string} nick 
+   * @param {string} msg 
+   * @param {Array} features 
    * @param {boolean} isRepeatMsg 
    * @returns {string|null}
    */
-  calculateMsg(msgObj, isRepeatMsg) {
-    const targetSize = this.calculateTargetMsgWidth(msgObj, isRepeatMsg)
+  calculateResponse(nick, msg, features = [], isRepeatMsg = false) {
+    const targetSize = this.calculateTargetMsgWidth(nick, msg, features, isRepeatMsg)
     if (targetSize === undefined) {
       return null
     }
 
     if (this.maxSize && targetSize > this.maxSize) {
-      util.debug('Size ', targetSize, 'went over the maximum of', this.maxSize)
+      Util.debug('Size ', targetSize, 'went over the maximum of', this.maxSize)
       return null
     }
 
-    const msg = this.createMsgToSize(targetSize)
-    if (!msg) {
-      util.debug('Cannot respond to', msgObj.nick)
+    const response = this.createMsgToSize(targetSize)
+    if (!response) {
+      Util.debug('Cannot respond to', nick)
     }
 
-    return msg
+    return response
   }
 }
 
